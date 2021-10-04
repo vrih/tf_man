@@ -4,7 +4,7 @@ require 'open3'
 INPUT=ARGV[0]
 TYPE=ARGV[1]
 
-data = File.read('aws.json')
+data = File.read(INPUT)
 a = JSON.parse(data)
 
 a['included'].each do |doc|
@@ -13,8 +13,8 @@ a['included'].each do |doc|
   section = attr['category']
   section = 'data' if attr['category'] == 'data_source'
   content = "#{attr['content']}"
-  content.gsub!(/^# Resource:/, "## NAME \n#{attr['title']} \\- #{attr['description']}")
+  content.gsub!(/^# Resource:/, "## NAME\n#{attr['title']} \\- #{attr['description']}")
   content.gsub!(/^#/, '')
   content.gsub!('page_title:', 'title:')
-  stdout_str, exit_code = Open3.capture2("pandoc -f markdown -t man -s -o tf_#{TYPE}_#{doc['attributes']['category']}_#{doc['attributes']['slug']}.7", stdin_data: content)
+  stdout_str, exit_code = Open3.capture2("pandoc -f markdown -t man -s -o tf_#{TYPE}_#{section}_#{doc['attributes']['slug']}.5", stdin_data: content)
 end
